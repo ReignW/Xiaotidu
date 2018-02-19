@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://F:\Android\AndroidStudioProjects\UI_Design\As\As.iml" filepath="F:\Android\AndroidStudioProjects\UI_Design\As\As.iml" />
+      <module fileurl="file://$PROJECT_DIR$/XiaoTiDu.iml" filepath="$PROJECT_DIR$/XiaoTiDu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://F:\Android\AndroidStudioProjects\UI_Design\As\app\app.iml" filepath="F:\Android\AndroidStudioProjects\UI_Design\As\app\app.iml" />
+    </modules>
+  </component>
+</project>
