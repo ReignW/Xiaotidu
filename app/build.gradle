@@ -33,4 +33,5 @@ dependencies {
 
     compile 'com.apollographql.apollo:apollo-gradle-plugin:0.4.4'
     compile 'com.apollographql.apollo:apollo-runtime:0.4.4'
+
 }
