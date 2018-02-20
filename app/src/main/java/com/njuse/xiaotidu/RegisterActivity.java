@@ -13,16 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.njuse.utils.IdentifyingCodeStyle;
 import com.njuse.utils.MailUtil;
 
 import java.util.Properties;
 import java.util.Random;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
@@ -58,6 +56,10 @@ public class RegisterActivity extends AppCompatActivity {
         identifyingCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!isEmailLegal(emailAddress.getText().toString())) {
+                    Toast.makeText(RegisterActivity.this, "邮箱格式不正确，请修改！", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this)
                         .setTitle("发送验证码")
                         .setMessage("请确认你的邮箱地址：\n" + emailAddress.getText().toString() + "\n如果填写无误，稍后你将收到一封验证码邮件");
@@ -109,6 +111,23 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private boolean isEmailLegal(String email) {
+        /*
+           设定邮箱地址的合法规则，合法邮箱地址要求如下：
+                   （1）字符必须是英文或数字开始
+                   （2）必须包含一个@
+                   （3）@符号在. 符号前面
+                   （4）以英文或数字结尾
+		 */
+        //设置一个正则表达式
+        String reg = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}";
+        //告知此字符串是否匹配给定的正则表达式。
+        if (email.matches(reg))
+            return true;
+        else
+            return false;
+    }
+
     //发送验证码到用户邮箱
     public static boolean sendIdentifyingCode(final String receiver, final String identifyingCode) {
         // 1. 创建参数配置, 用于连接邮件服务器的参数配置
@@ -130,7 +149,9 @@ public class RegisterActivity extends AppCompatActivity {
         // 3. 创建一封邮件
         MimeMessage message = null;//我这里是以163邮箱为发信邮箱测试通过
         try {
-            message = MailUtil.createMimeMessage(session, "13420146901@163.com", receiver, "验证码："+identifyingCode+"\n(注意！请不要泄露给他人！)\n\n如果不是你本人操作，请忽略该邮件！请勿回复！");
+            String codeStyle = IdentifyingCodeStyle.getCodeStyle(identifyingCode);
+//            message = MailUtil.createMimeMessage(session, "13420146901@163.com", receiver, "验证码："+identifyingCode+"\n(注意！请不要泄露给他人！)\n\n如果不是你本人操作，请忽略该邮件！请勿回复！");
+            message = MailUtil.createMimeMessage(session, "13420146901@163.com", receiver, codeStyle);
             // 4. 根据 Session 获取邮件传输对象
             Transport transport = session.getTransport();
             transport.connect("13420146901@163.com", "njuse2017");
@@ -147,11 +168,11 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-
     private void initWidget() {
         backToLogin = findViewById(R.id.back_to_login);
         userAgreement = findViewById(R.id.user_agreement_textview);
         emailAddress = findViewById(R.id.email_edittext);
         identifyingCode = findViewById(R.id.identifiying_code_button);
     }
+
 }
