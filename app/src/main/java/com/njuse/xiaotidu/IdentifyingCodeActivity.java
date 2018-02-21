@@ -1,5 +1,6 @@
 package com.njuse.xiaotidu;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class IdentifyingCodeActivity extends AppCompatActivity {
     private EditText identifyingCode;
     private Button identify;
     private CheckBox emailForAccount;
+    private ProgressDialog waiting;
 
     String address;     //邮箱地址
     String code;        //验证码
@@ -48,7 +50,7 @@ public class IdentifyingCodeActivity extends AppCompatActivity {
     boolean isIdentifyClickable;    //验证按钮是否可点击
     boolean isSendSuccess;      //判断新的验证码是否发送成功
     String newCode;
-    int second = 20;    //验证码发送时间间隔60s
+    int second = 60;    //验证码发送时间间隔60s
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,12 +136,14 @@ public class IdentifyingCodeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int rawCode = new Random().nextInt(999999);     //生成验证码
                 newCode = rawCode + "";
+                waiting = ProgressDialog.show(IdentifyingCodeActivity.this,"正在发送","正在发送验证码，请稍候...");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        isSendSuccess = EmailSender.sendEmail(address, IdentifyingCodeStyle.getCodeStyle(newCode));
+                        isSendSuccess = EmailSender.sendEmail(address, IdentifyingCodeStyle.getCodeStyle(newCode),"小题督用户注册验证码");
                         //避免子线程不能Toast的问题
                         Looper.prepare();
+                        waiting.dismiss();
                         if (isSendSuccess) {
                             code = newCode;
                             second = 60;

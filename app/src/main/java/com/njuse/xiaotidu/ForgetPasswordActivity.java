@@ -1,5 +1,6 @@
 package com.njuse.xiaotidu;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -13,12 +14,13 @@ import android.widget.Toast;
 
 import com.njuse.utils.EmailSender;
 import com.njuse.utils.PasswordStyle;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
 /**
  * Created by Administrator on 2018/2/5.
  */
 
-public class ForgetPasswordActivity extends AppCompatActivity{
+public class ForgetPasswordActivity extends AppCompatActivity {
     private LinearLayout backToLogin;
     private EditText emailAddress;
     private Button findBackPassword;
@@ -26,6 +28,8 @@ public class ForgetPasswordActivity extends AppCompatActivity{
     private boolean isSendSuccess;
     private String email;
     private String password;
+
+    ProgressDialog waiting;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class ForgetPasswordActivity extends AppCompatActivity{
         backToLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ForgetPasswordActivity.this,LoginActivity.class));
+                startActivity(new Intent(ForgetPasswordActivity.this, LoginActivity.class));
                 finish();
             }
         });
@@ -49,22 +53,26 @@ public class ForgetPasswordActivity extends AppCompatActivity{
             public void onClick(View v) {
                 //设置一个正则表达式
                 String emailPattern = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}";
-                if (!emailAddress.getText().toString().matches(emailPattern)){
-                    Toast.makeText(ForgetPasswordActivity.this,"邮箱格式不正确，请修改！",Toast.LENGTH_LONG).show();
-                }else {
+                if (!emailAddress.getText().toString().matches(emailPattern)) {
+                    Toast.makeText(ForgetPasswordActivity.this, "邮箱格式不正确，请修改！", Toast.LENGTH_LONG).show();
+                } else {
                     email = emailAddress.getText().toString();
                     password = getPasswordByEmail(email);
 
+                    waiting = ProgressDialog.show(ForgetPasswordActivity.this, "正在发送", "正在为你找回密码，请稍候...");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            isSendSuccess = EmailSender.sendEmail(email, PasswordStyle.getPasswordStyle(password));
+                            isSendSuccess = EmailSender.sendEmail(email, PasswordStyle.getPasswordStyle(password),"小题督用户找回密码");
 
                             Looper.prepare();
-                            if (isSendSuccess){
-                                Toast.makeText(ForgetPasswordActivity.this,"发送成功！",Toast.LENGTH_LONG).show();
-                            }else {
-                                Toast.makeText(ForgetPasswordActivity.this,"发送失败，请重试！",Toast.LENGTH_LONG).show();
+                            waiting.dismiss();//万万不可少这句，否则会程序会卡死。
+                            if (isSendSuccess) {
+                                Toast.makeText(ForgetPasswordActivity.this, "发送成功！", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(ForgetPasswordActivity.this, LoginActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(ForgetPasswordActivity.this, "发送失败，请重试！", Toast.LENGTH_LONG).show();
                             }
                             Looper.loop();
                         }
@@ -88,4 +96,5 @@ public class ForgetPasswordActivity extends AppCompatActivity{
 
         isSendSuccess = false;
     }
+
 }

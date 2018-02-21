@@ -46,7 +46,7 @@ public class MailUtil {
      * @return
      * @throws Exception
      */
-    public static MimeMessage createMimeMessage(Session session, String sendMail, String receiveMail,String identifyingCode) throws Exception {
+    public static MimeMessage createMimeMessage(Session session, String sendMail, String receiveMail,String identifyingCode,String subject) throws Exception {
         // 1. 创建一封邮件
         MimeMessage message = new MimeMessage(session);
         // 2. From: 发件人
@@ -54,7 +54,7 @@ public class MailUtil {
         // 3. To: 收件人（可以增加多个收件人、抄送、密送）
         message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(receiveMail, "亲爱的用户", "UTF-8"));
         // 4. Subject: 邮件主题
-        message.setSubject("小题督用户注册验证码", "UTF-8");
+        message.setSubject(subject, "UTF-8");
         // 5. Content: 邮件正文（可以使用html标签）
         message.setContent(identifyingCode, "text/html;charset=UTF-8");
         // 6. 设置发件时间

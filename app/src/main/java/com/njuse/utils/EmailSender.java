@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 
 public class EmailSender {
     //发送验证码到用户邮箱
-    public static boolean sendEmail(final String receiver, final String emailContent) {
+    public static boolean sendEmail(final String receiver, final String emailContent,String subject) {
         // 1. 创建参数配置, 用于连接邮件服务器的参数配置
         Properties props = new Properties();          // 参数配置
         props.setProperty("mail.transport.protocol", "smtp");  // 使用的协议（JavaMail规范要求）
@@ -34,7 +34,7 @@ public class EmailSender {
         MimeMessage message = null;//我这里是以163邮箱为发信邮箱测试通过
         try {
 //            message = MailUtil.createMimeMessage(session, "13420146901@163.com", receiver, "验证码："+identifyingCode+"\n(注意！请不要泄露给他人！)\n\n如果不是你本人操作，请忽略该邮件！请勿回复！");
-            message = MailUtil.createMimeMessage(session, "xiaotidu_info@yeah.net", receiver, emailContent);
+            message = MailUtil.createMimeMessage(session, "xiaotidu_info@yeah.net", receiver, emailContent,subject);
             // 4. 根据 Session 获取邮件传输对象
             Transport transport = session.getTransport();
 //            transport.connect("13420146901@163.com", "njuse2017");    //已废弃

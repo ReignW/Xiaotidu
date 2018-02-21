@@ -1,5 +1,6 @@
 package com.njuse.xiaotidu;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.njuse.utils.EmailSender;
 import com.njuse.utils.IdentifyingCodeStyle;
 import com.njuse.utils.MailUtil;
 
@@ -36,7 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText emailAddress;
     private Button identifyingCode;
     boolean isSendSuccess;
-    String code;
+    private String code;
+    private ProgressDialog waiting;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,24 +90,24 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int rawCode = new Random().nextInt(999999);     //生成验证码
-//                        code = rawCode + "";
-                        code = "111111";
-
+                        code = IdentifyingCodeStyle.getCodeStyle(rawCode + "");
+                        waiting = ProgressDialog.show(RegisterActivity.this,"正在发送","正在发送验证码，请稍候...");
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-//                                    isSendSuccess = EmailSender.sendEmail(emailAddress.getText().toString(), IdentifyingCodeStyle.getCodeStyle(code));
-                                    isSendSuccess = true;
+                                    isSendSuccess = EmailSender.sendEmail(emailAddress.getText().toString(), code,"小题督用户注册验证码");
+
+                                    Looper.prepare();
+                                    waiting.dismiss();
                                     if (isSendSuccess) {
                                         startActivity(new Intent(RegisterActivity.this, IdentifyingCodeActivity.class)
                                                 .putExtra("email", emailAddress.getText().toString())
                                                 .putExtra("identifyingCode", code));
-                                    }else {
-                                        Looper.prepare();
+                                    } else {
                                         Toast.makeText(RegisterActivity.this, "验证码发送失败，请重试！", Toast.LENGTH_LONG).show();
-                                        Looper.loop();
                                     }
+                                    Looper.loop();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
