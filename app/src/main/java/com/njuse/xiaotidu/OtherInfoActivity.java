@@ -99,7 +99,7 @@ public class OtherInfoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String passwordPattern = "[A-Za-z0-9_]{8,16}";      //密码匹配的正则表达式
+                String passwordPattern = "[A-Za-z0-9_]{8,16}";      //密码匹配的正则表达式(还未完善)
                 if (password.getText().toString().equals("") || password.getText().toString().equals("")){
                     return;
                 }

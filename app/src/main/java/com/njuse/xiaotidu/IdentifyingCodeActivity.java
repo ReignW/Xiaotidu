@@ -20,6 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.njuse.utils.EmailSender;
+import com.njuse.utils.IdentifyingCodeStyle;
+import com.njuse.utils.PasswordStyle;
+
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,7 +48,7 @@ public class IdentifyingCodeActivity extends AppCompatActivity {
     boolean isIdentifyClickable;    //验证按钮是否可点击
     boolean isSendSuccess;      //判断新的验证码是否发送成功
     String newCode;
-    int second = 60;    //验证码发送时间间隔60s
+    int second = 20;    //验证码发送时间间隔60s
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,7 +137,7 @@ public class IdentifyingCodeActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        isSendSuccess = RegisterActivity.sendIdentifyingCode(address, newCode);
+                        isSendSuccess = EmailSender.sendEmail(address, IdentifyingCodeStyle.getCodeStyle(newCode));
                         //避免子线程不能Toast的问题
                         Looper.prepare();
                         if (isSendSuccess) {
