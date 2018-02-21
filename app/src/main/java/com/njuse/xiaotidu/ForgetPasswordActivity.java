@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.njuse.utils.EmailSender;
+import com.njuse.utils.Format;
 import com.njuse.utils.PasswordStyle;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
@@ -51,9 +52,7 @@ public class ForgetPasswordActivity extends AppCompatActivity {
         findBackPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //设置一个正则表达式
-                String emailPattern = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}";
-                if (!emailAddress.getText().toString().matches(emailPattern)) {
+                if (!Format.isEmailLegal(emailAddress.getText().toString())) {
                     Toast.makeText(ForgetPasswordActivity.this, "邮箱格式不正确，请修改！", Toast.LENGTH_LONG).show();
                 } else {
                     email = emailAddress.getText().toString();

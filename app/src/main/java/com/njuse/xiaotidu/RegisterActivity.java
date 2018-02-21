@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.njuse.utils.EmailSender;
+import com.njuse.utils.Format;
 import com.njuse.utils.IdentifyingCodeStyle;
 import com.njuse.utils.MailUtil;
 
@@ -62,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
         identifyingCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isEmailLegal(emailAddress.getText().toString())) {
+                if (!Format.isEmailLegal(emailAddress.getText().toString())) {
                     Toast.makeText(RegisterActivity.this, "邮箱格式不正确，请修改！", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -118,23 +119,6 @@ public class RegisterActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private boolean isEmailLegal(String email) {
-        /*
-           设定邮箱地址的合法规则，合法邮箱地址要求如下：
-                   （1）字符必须是英文或数字开始
-                   （2）必须包含一个@
-                   （3）@符号在. 符号前面
-                   （4）以英文或数字结尾
-		 */
-        //设置一个正则表达式
-        String reg = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}";
-        //告知此字符串是否匹配给定的正则表达式。
-        if (email.matches(reg))
-            return true;
-        else
-            return false;
     }
 
     private void initWidget() {

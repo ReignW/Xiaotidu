@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.njuse.utils.Format;
+
 /**
  * Created by Administrator on 2018/2/5.
  */
@@ -76,12 +78,7 @@ public class OtherInfoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String phoneNumPattern = "(13|14|15|18)[0-9]{9}";     //手机号正则表达式
-                if (phoneNum.getText().toString().matches(phoneNumPattern)) {
-                    isPhoneNumberMatch = true;
-                } else {
-                    isPhoneNumberMatch = false;
-                }
+                isPhoneNumberMatch = Format.isPhoneNumberLegal(phoneNum.getText().toString());
             }
 
             @Override
@@ -99,11 +96,10 @@ public class OtherInfoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String passwordPattern = "[A-Za-z0-9_]{8,16}";      //密码匹配的正则表达式(还未完善)
                 if (password.getText().toString().equals("") || password.getText().toString().equals("")){
                     return;
                 }
-                if (password.getText().toString().matches(passwordPattern) && passwordConfirm.getText().toString().equals(password.getText().toString())){
+                if (Format.isPasswordLegal(password.getText().toString()) && passwordConfirm.getText().toString().equals(password.getText().toString())){
                     isPasswordMatch = true;
                 }else {
                     isPasswordMatch = false;
