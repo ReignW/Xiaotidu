@@ -45,7 +45,7 @@
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="密码由8-16位数字、字母或符号组成，至少含有2种及以上的字符" />
+                android:text="密码由8-16位数字、字母或下划线组成，至少含有2种及以上的字符" />
 
         </LinearLayout>
 
