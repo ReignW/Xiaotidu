@@ -40,7 +40,7 @@ public class IdentifyingCodeStyle {
                         "</tr>\n" +
                         "<tr>\n" +
                         "\n" +
-                        "<td align=\"left\" valign=\"top\" style=\"font-size:14px; color:#7b7b7b; line-height: 25px; font-family:Hiragino Sans GB; padding: 20px 0px 20px 0px\">你正在请求验证邮箱，请在 30 分钟内输入以下验证码完成验证。 如非你本人操作，请忽略此邮件。\n" +
+                        "<td align=\"left\" valign=\"top\" style=\"font-size:14px; color:#7b7b7b; line-height: 25px; font-family:Hiragino Sans GB; padding: 20px 0px 20px 0px\">你正在请求验证邮箱，请在 30 分钟内输入以下6位数字完成验证。 如非你本人操作，请忽略此邮件。\n" +
                         "\n" +
                         "</td>\n" +
                         "</tr>\n" +

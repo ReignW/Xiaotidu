@@ -3,6 +3,8 @@ package com.njuse.xiaotidu;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -18,11 +20,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Administrator on 2018/2/5.
  */
 
-public class IdentifyingCodeActivity extends AppCompatActivity{
+public class IdentifyingCodeActivity extends AppCompatActivity {
     private LinearLayout backToInputEmail;
     private TextView emailAddress;
     private TextView openEmail;
@@ -36,6 +42,9 @@ public class IdentifyingCodeActivity extends AppCompatActivity{
     String code;        //验证码
     boolean isChecked;   //复选框是否被选中
     boolean isIdentifyClickable;    //验证按钮是否可点击
+    boolean isSendSuccess;      //判断新的验证码是否发送成功
+    String newCode;
+    int second = 60;    //验证码发送时间间隔60s
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,11 +54,33 @@ public class IdentifyingCodeActivity extends AppCompatActivity{
         //初始化控件
         initWidget();
 
+        //设置计时器计算重新发送验证码的时间间隔
+        Timer timer = new Timer(false);
+        //TimerTask中通过Handler交由UIThread更新UI
+        final Handler handler = new Handler();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (second > 0) {
+                            countDown.setText(second-- + "s后可以重新发送");
+                            resendCode.setText("");
+                        } else {
+                            countDown.setText("");
+                            resendCode.setText("重新发送");
+                        }
+                    }
+                });
+            }
+        }, 0, 1000);
+
         //响应事件
         backToInputEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(IdentifyingCodeActivity.this,RegisterActivity.class));
+                startActivity(new Intent(IdentifyingCodeActivity.this, RegisterActivity.class));
                 finish();
             }
         });
@@ -65,14 +96,14 @@ public class IdentifyingCodeActivity extends AppCompatActivity{
         identify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isIdentifyClickable){
-                    if (identifyingCode.getText().toString().equals(code)){
-                        startActivity(new Intent(IdentifyingCodeActivity.this,OtherInfoActivity.class).putExtra("email",address));
-                        Toast.makeText(IdentifyingCodeActivity.this,"验证成功！",Toast.LENGTH_LONG).show();
+                if (isIdentifyClickable) {
+                    if (identifyingCode.getText().toString().equals(code)) {
+                        startActivity(new Intent(IdentifyingCodeActivity.this, OtherInfoActivity.class).putExtra("email", address));
+                        Toast.makeText(IdentifyingCodeActivity.this, "验证成功！", Toast.LENGTH_LONG).show();
                         finish();
-                    }else {
+                    } else {
                         identifyingCode.setText("");
-                        Toast.makeText(IdentifyingCodeActivity.this,"验证码错误，请重新输入！",Toast.LENGTH_LONG).show();
+                        Toast.makeText(IdentifyingCodeActivity.this, "验证码错误，请重新输入！", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -92,6 +123,31 @@ public class IdentifyingCodeActivity extends AppCompatActivity{
             public void afterTextChanged(Editable s) {
             }
         });
+
+        //重新发送验证码
+        resendCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int rawCode = new Random().nextInt(999999);     //生成验证码
+                newCode = rawCode + "";
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        isSendSuccess = RegisterActivity.sendIdentifyingCode(address, newCode);
+                        //避免子线程不能Toast的问题
+                        Looper.prepare();
+                        if (isSendSuccess) {
+                            code = newCode;
+                            second = 60;
+                            Toast.makeText(IdentifyingCodeActivity.this, "验证码发送成功！", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(IdentifyingCodeActivity.this, "验证码发送失败，请重新发送！", Toast.LENGTH_LONG).show();
+                        }
+                        Looper.loop();
+                    }
+                }).start();
+            }
+        });
     }
 
     private void initWidget() {
@@ -109,10 +165,10 @@ public class IdentifyingCodeActivity extends AppCompatActivity{
         code = getIntent().getStringExtra("identifyingCode");
 
         //显示邮箱地址
-        SpannableStringBuilder span = new SpannableStringBuilder("我们已经给邮箱"+address+"发送了一个6位数验证码");
-        span.setSpan(new ForegroundColorSpan(Color.rgb(255,163,0)),
+        SpannableStringBuilder span = new SpannableStringBuilder("我们已经给邮箱" + address + "发送了一个6位数验证码");
+        span.setSpan(new ForegroundColorSpan(Color.rgb(255, 163, 0)),
                 "我们已经给邮箱".length(),
-                ("我们已经给邮箱"+address).length(),
+                ("我们已经给邮箱" + address).length(),
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         emailAddress.setText(span);
     }

@@ -3,6 +3,7 @@ package com.njuse.xiaotidu;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import com.njuse.utils.MailUtil;
 
 import java.util.Properties;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -84,20 +87,24 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         int rawCode = new Random().nextInt(999999);     //生成验证码
-                        code = rawCode + "";
+//                        code = rawCode + "";
+                        code = "111111";
 
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
 
-                                    isSendSuccess = sendIdentifyingCode(emailAddress.getText().toString(), code);
+//                                    isSendSuccess = sendIdentifyingCode(emailAddress.getText().toString(), code);
+                                    isSendSuccess = true;
                                     if (isSendSuccess) {
                                         startActivity(new Intent(RegisterActivity.this, IdentifyingCodeActivity.class)
                                                 .putExtra("email", emailAddress.getText().toString())
                                                 .putExtra("identifyingCode", code));
-                                    } else {
+                                    }else {
+                                        Looper.prepare();
                                         Toast.makeText(RegisterActivity.this, "验证码发送失败，请重试！", Toast.LENGTH_LONG).show();
+                                        Looper.loop();
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
