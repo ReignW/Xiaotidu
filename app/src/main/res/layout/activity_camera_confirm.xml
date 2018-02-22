@@ -4,43 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.njuse.xiaotidu.xiaotidu.CameraConfirmActivity">
+    tools:context="com.njuse.xiaotidu.CameraConfirmActivity">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="74dp">
-        <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-/>
-        <Button
-            android:id="@+id/confirm"
-            android:layout_height="50dp"
-            android:layout_width="60dp"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/preview_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/confirm_button"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_margin="25dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:background="@mipmap/ok"/>
+
+            <Button
+                android:id="@+id/reshot_button"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_alignBottom="@+id/confirm_button"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="25dp"
+                android:background="@mipmap/no" />
+        </RelativeLayout>
 
 
-            android:layout_marginRight="275dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:background="@mipmap/ok"
-            android:layout_marginBottom="10dp"/>
-
-        <Button
-            android:id="@+id/back"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-
-            android:layout_marginLeft="290dp"
-            android:background="@mipmap/no"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"/>
-
-
-    </RelativeLayout>
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

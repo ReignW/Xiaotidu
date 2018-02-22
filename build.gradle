@@ -5,11 +5,11 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven{ url 'https://dl.bintray.com/apollographql/android' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-
-//        classpath 'com.apollographql.apollo:apollo-gradle-plugin:0.4.4'
+        classpath 'com.apollographql.apollo:apollo-gradle-plugin:0.4.4'
 
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -21,6 +21,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven{ url 'https://dl.bintray.com/apollographql/android' }
+        maven{ url 'https://jitpack.io' }
     }
 }
 

@@ -1,10 +1,20 @@
 package com.njuse.xiaotidu;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TimePicker;
+
+import com.njuse.utils.Permissions;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,8 +27,25 @@ public class MainActivity extends AppCompatActivity {
         camera_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(MainActivity.this,CameraActivity.class);
-                startActivity(i);
+                Permissions.verifyCameraPermission(MainActivity.this);
+                final Handler handler = new Handler();
+                final Timer timer = new Timer(false);
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                                    Intent i=new Intent(MainActivity.this,CameraActivity.class);
+                                    startActivity(i);
+                                    timer.cancel();
+                                }
+                            }
+                        });
+                    }
+                },0,100);
+
             }
         });
     //用户设置

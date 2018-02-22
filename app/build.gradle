@@ -36,6 +36,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
 //    compile 'com.apollographql.apollo:apollo-gradle-plugin:0.4.4'     //该死，害人的东西。。。。
     compile 'com.apollographql.apollo:apollo-runtime:0.4.4'
+    compile 'com.apollographql.apollo:apollo-http-cache:0.4.4'
     implementation files('src/lib/activation.jar')
     implementation files('src/lib/additionnal.jar')
     implementation files('src/lib/mail.jar')

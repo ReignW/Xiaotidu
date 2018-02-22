@@ -1,8 +1,11 @@
 package com.njuse.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+
+import com.njuse.xiaotidu.MainApplication;
 
 /**
  * Created by Administrator on 2018/2/21.
@@ -27,6 +30,17 @@ public class Permissions {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return true;
+    }
+
+    public static boolean verifyCameraPermission(Activity activity){
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+                /* 相机请求码 */
+            final int REQUEST_CAMERA = 0;
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{android.Manifest.permission.CAMERA},REQUEST_CAMERA);
         }
         return true;
     }
