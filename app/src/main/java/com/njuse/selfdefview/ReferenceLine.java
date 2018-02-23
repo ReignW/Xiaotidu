@@ -62,10 +62,10 @@ public class ReferenceLine extends View {
         int width = screenWidth/3;
         int height = screenHeight/3;
 
-        for (int i = width,j = 0;i<screenWidth && j<2;i+=width,j++){
+        for (int i = width,j = 0;i<=screenWidth && j<2;i+=width,j++){
             canvas.drawLine(i,0,i,screenHeight,paint);      //画垂直线
         }
-        for (int j = height,i = 0;j<screenHeight && i<2;j+=height,i++){
+        for (int j = height,i = 0;j<=screenHeight && i<2;j+=height,i++){
             canvas.drawLine(0,j,screenWidth,j,paint);       //画水平线
         }
     }

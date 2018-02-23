@@ -10,7 +10,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/shoot"
+            android:id="@+id/shot_button"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentBottom="true"
@@ -19,10 +19,10 @@
             android:background="@drawable/shoot" />
 
         <TextView
-            android:id="@+id/album"
+            android:id="@+id/album_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/shoot"
+            android:layout_alignBottom="@+id/shot_button"
             android:layout_alignParentStart="true"
             android:layout_marginBottom="20dp"
             android:layout_marginStart="20dp"
@@ -31,10 +31,10 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/reshot_button"
+            android:id="@+id/cancel_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/album"
+            android:layout_alignBottom="@+id/album_textview"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="20dp"
             android:text="取消"
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/album"
+            android:layout_alignStart="@+id/album_textview"
             android:layout_marginTop="20dp"
             android:text="闪光灯"
             android:textColor="@android:color/white" />

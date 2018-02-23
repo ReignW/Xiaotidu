@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -20,6 +21,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -30,15 +32,10 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.njuse.selfdefview.AutoFixTextureView;
-import com.njuse.selfdefview.ShotLandView;
-import com.njuse.selfdefview.ShotPortView;
-import com.njuse.utils.FileUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,25 +49,21 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity implements View.OnClickListener {
     //    首先，创建OrientationEventListener对象：
     private OrientationEventListener mOrientationListener;
     // screen orientation listener
     private boolean mScreenProtrait = true;
     private boolean mCurrentOrient = false;
 
-    private TextView openLight;
-    private TextView album;
-    private TextView back;
-    private Button shot;
-    private FrameLayout frameLayout;
     private FrameLayout.LayoutParams params;
-    private ShotLandView shotLandView;
-    private ShotPortView shotPortView;
+    private View shotLandView;
+    private View shotPortView;
 
     private String fileName;    //照片保存的名字
     private String tempName = "temp.jpg";
     private Intent i;
+    private boolean isFlashlightOpen;   //记录闪光灯是否打开
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "CameraActivity";
@@ -82,7 +75,11 @@ public class CameraActivity extends Activity {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
+    private int FLASH_MODE;
     private AutoFixTextureView textureView;
+    private Camera camera;
+    private Camera.Parameters parameters;
+    private CameraManager manager;
     private String mCameraId = "0"; // 摄像头ID（通常0代表后置摄像头，1代表前置摄像头）
     private CameraDevice cameraDevice;// 定义代表摄像头的成员变量
     private Size previewSize;    // 预览尺寸
@@ -138,7 +135,6 @@ public class CameraActivity extends Activity {
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,53 +148,89 @@ public class CameraActivity extends Activity {
         // 为textureView组件设置监听器
         textureView.setSurfaceTextureListener(mSurfaceTextureListener);
 
-        //按下拍照键，仅实现跳转到Confirm界面
-        shot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //进行拍照
-                captureStillPicture();
-                i = new Intent(CameraActivity.this, CameraConfirmActivity.class);
-                final Handler handler = new Handler();
-                final Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        handler.post(new Runnable() {
-                                         @Override
-                                         public void run() {
-                                            if (tempName.equals(fileName)){
-                                                i.putExtra("fileName", getExternalFilesDir(null) + "/" + fileName);    //将照片传递到另一个页面
-                                                fileName = null;
-                                                startActivity(i);
-                                                timer.cancel();
-                                            }
-                                         }
-                                     }
-                        );
-                    }
-                }, 0, 500);
-            }
-        });
+        //按下拍照键，实现拍照和跳转到Confirm界面
+        findViewById(R.id.shot_button).setOnClickListener(this);
+        findViewById(R.id.shot_button_land).setOnClickListener(this);
 
         //返回主界面
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CameraActivity.this.finish();
-            }
-        });
+        findViewById(R.id.cancel_textview).setOnClickListener(this);
+        findViewById(R.id.cancel_textview_land).setOnClickListener(this);
 
         //调用相册
+        findViewById(R.id.album_textview).setOnClickListener(this);
+        findViewById(R.id.album_textview_land).setOnClickListener(this);
+
+        //打开或者关闭闪光灯
+        findViewById(R.id.light_textview).setOnClickListener(this);
+        findViewById(R.id.light_textview_land).setOnClickListener(this);
+    }
+
+    //点击拍照
+    private void shot() {
+        //进行拍照
+        captureStillPicture();
+        i = new Intent(CameraActivity.this, CameraConfirmActivity.class);
+        final Handler handler = new Handler();
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     if (tempName.equals(fileName)) {
+                                         i.putExtra("fileName", getExternalFilesDir(null) + "/" + fileName);    //将照片传递到另一个页面
+                                         fileName = null;
+                                         startActivity(i);
+                                         timer.cancel();
+                                         finish();
+                                     }
+                                 }
+                             }
+                );
+            }
+        }, 0, 500);
+    }
+
+    //打开或者关闭闪光灯
+    private void openOrCloseFlashlight() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+            Toast.makeText(this, "你的设备不支持闪光灯!", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (isFlashlightOpen) {
+            isFlashlightOpen = false;
+        } else {
+            isFlashlightOpen = true;
+        }
+        //控制闪光灯
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { //android6.0调用的手电筒接口
+            //我实在是搞不定。。。。
+
+        }else{
+//            低于6.0系统的手电筒
+            camera = Camera.open();
+            parameters = camera.getParameters();
+            if ( isFlashlightOpen){
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);// 开启
+                camera.setParameters(parameters);
+                camera.startPreview();
+            }else{
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);// 关闭
+                camera.setParameters(parameters);
+                camera.stopPreview();
+                camera.release();
+            }
+
+        }
     }
 
     private void intiWidget() {
-        frameLayout = findViewById(R.id.framelayout);
-        openLight = findViewById(R.id.light_textview);
-        album = findViewById(R.id.album);
-        back = findViewById(R.id.reshot_button);
-        shot = findViewById(R.id.shoot);
         textureView = findViewById(R.id.preview_textureview);
+        shotPortView = findViewById(R.id.shot_port_include);
+        shotLandView = findViewById(R.id.shot_land_include);
+
+        isFlashlightOpen = false;
     }
 
 
@@ -233,26 +265,14 @@ public class CameraActivity extends Activity {
             case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
                 //横屏监听事件
 //                CameraActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//                params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT);
-//                shotLandView = new ShotLandView(this);
-//                shotLandView.setLayoutParams(params);
-//                frameLayout.removeViewAt(2);
-//                frameLayout.addView(shotLandView);
-//                RelativeLayout relativeLayout1 = (RelativeLayout) frameLayout.getChildAt(2);
-//                relativeLayout1.removeAllViews();
-//                relativeLayout1.addView(shotLandView);
+                shotPortView.setVisibility(View.GONE);
+                shotLandView.setVisibility(View.VISIBLE);
                 break;
             case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
                 //竖屏监听事件
 //                CameraActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//                params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT);
-//                shotPortView = new ShotPortView(this);
-//                shotPortView.setLayoutParams(params);
-//                frameLayout.removeViewAt(2);
-//                frameLayout.addView(shotPortView);
-//                RelativeLayout relativeLayout2 = (RelativeLayout) frameLayout.getChildAt(2);
-//                relativeLayout2.removeAllViews();
-//                relativeLayout2.addView(shotPortView);
+                shotLandView.setVisibility(View.GONE);
+                shotPortView.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -314,7 +334,7 @@ public class CameraActivity extends Activity {
     // 打开摄像头
     private void openCamera(int width, int height) {
         setUpCameraOutputs(width, height);
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             // 打开摄像头
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -359,7 +379,7 @@ public class CameraActivity extends Activity {
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // 设置自动曝光模式
                                 previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH_REDEYE);
                                 // 开始显示相机预览
                                 previewRequest = previewRequestBuilder.build();
                                 // 设置预览时连续捕获图像数据
@@ -427,7 +447,7 @@ public class CameraActivity extends Activity {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
             } else {
-            textureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+                textureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -456,6 +476,27 @@ public class CameraActivity extends Activity {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.shot_button:
+            case R.id.shot_button_land:
+                shot();
+                break;
+            case R.id.album_textview:
+            case R.id.album_textview_land:
+                break;
+            case R.id.cancel_textview:
+            case R.id.cancel_textview_land:
+                CameraActivity.this.finish();
+                break;
+            case R.id.light_textview:
+            case R.id.light_textview_land:
+                openOrCloseFlashlight();
+                break;
+        }
+    }
+
     // 为Size定义一个比较器Comparator
     static class CompareSizesByArea implements Comparator<Size> {
         @Override
@@ -465,6 +506,7 @@ public class CameraActivity extends Activity {
                     (long) rhs.getWidth() * rhs.getHeight());
         }
     }
+
 }
 
 

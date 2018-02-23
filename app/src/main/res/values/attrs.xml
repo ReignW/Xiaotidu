@@ -9,4 +9,8 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="CutView">
+        <attr name="floatColor" format="color" />
+    </declare-styleable>
+
 </resources>

@@ -4,51 +4,53 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/top_frame_RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/shoot"
+            android:id="@+id/shot_button_land"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/shoot" />
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/shoot"
+            android:rotation="90" />
 
         <TextView
-            android:id="@+id/album"
+            android:id="@+id/album_textview_land"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/shoot"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_alignBottom="@+id/shot_button_land"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
+            android:rotation="90"
             android:text="相册"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/reshot_button"
+            android:id="@+id/cancel_textview_land"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/album"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"
+            android:layout_alignBottom="@+id/album_textview_land"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:rotation="90"
             android:text="取消"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/light_textview"
+            android:id="@+id/light_textview_land"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/reshot_button"
-            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:rotation="90"
             android:text="闪光灯"
             android:textColor="@android:color/white" />
-
     </RelativeLayout>
-
 </android.support.constraint.ConstraintLayout>
