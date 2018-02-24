@@ -6,7 +6,8 @@ package com.njuse.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.njuse.xiaotidu.CameraConfirmActivity;
 
@@ -19,21 +20,25 @@ import java.io.IOException;
  */
 public class Constants {
 
-    public static String path = "temp.png";//文件路径
+//    public static String clipImagePath = Environment.getDownloadCacheDirectory()+"/temp.png";//文件路径
+    public static String clipImagePath = "/storage/emulated/0/temp.png";//文件路径
 
     /**
      * 保存图片
      * @param cropBitmap
      */
     public static void saveBitmap(Bitmap cropBitmap) {
-        File file = new File(Constants.path);
+        File file = new File(Constants.clipImagePath);
         FileOutputStream os=null;
         if (file.exists())
             file.delete();
         try {
             file.createNewFile();
             os = new FileOutputStream(file);
-            cropBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            if (cropBitmap.compress(Bitmap.CompressFormat.PNG, 100, os)){
+                os.flush();
+                Log.i("asjfoiaifo;ajivfa","保存成功");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }finally {

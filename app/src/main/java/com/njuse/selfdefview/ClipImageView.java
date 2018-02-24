@@ -67,7 +67,6 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         if (isStart && moveY == 0) {
             //初次布局，绘画四周的边线
             initCanvas(canvas);
-            isStart = false;
         } else {
             //重画边线和遮罩
             reDraw(canvas);
@@ -80,6 +79,7 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
      * @param canvas
      */
     private void reDraw(Canvas canvas) {
+        isStart = false;
         paint.setStrokeWidth(strokeWidth);
         //style有三种模式fill,stroke,fill_and_stroke三种。
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -264,7 +264,6 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         }
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            ((CameraConfirmActivity) context).moveUp();
             return true;
         }
         return false;

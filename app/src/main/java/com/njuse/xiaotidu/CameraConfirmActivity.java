@@ -24,7 +24,7 @@ public class CameraConfirmActivity extends AppCompatActivity {
     private ImageView preview;
     private Button confirm;
     private Button reshot;
-    private ClipImageView imageView;
+    private ClipImageView clipImageView;
     private Line line;
     private Bitmap bitmap;
 
@@ -36,9 +36,13 @@ public class CameraConfirmActivity extends AppCompatActivity {
         //初始化控件
         initWidget();
 
+        bitmap = BitmapFactory.decodeFile(fileName);
+        clipImageView.setImageBitmap(bitmap);
+
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(CameraConfirmActivity.this,Constants.clipImagePath,Toast.LENGTH_LONG).show();
 
                 //展示搜索结果
 
@@ -64,14 +68,14 @@ public class CameraConfirmActivity extends AppCompatActivity {
         preview = findViewById(R.id.preview_imageview);
         confirm = findViewById(R.id.confirm_button);
         reshot = findViewById(R.id.reshot_button);
-        imageView = findViewById(R.id.clipimageview);
+        clipImageView = findViewById(R.id.clipimageview);
 
 //        Toast.makeText(CameraConfirmActivity.this,fileName,Toast.LENGTH_LONG).show();     //测试之用
         preview.setImageURI(Uri.fromFile(new File(fileName)));
     }
 
-    public void sure(View view) {
-        line = imageView.getClipLine();
+    public void saveClipImage(View view) {
+        line = clipImageView.getClipLine();
         Log.i("结果", line.getLeft() + " " + line.getTop() + " " + line.getRight() + " " + line.getBottom());
         bitmap=bitmap.createBitmap(bitmap, (int)line.getLeft(),(int)line.getTop(),(int)line.getRight(),(int)line.getBottom());//截取图片
         Constants.saveBitmap(bitmap);//保存截取图片
@@ -86,16 +90,11 @@ public class CameraConfirmActivity extends AppCompatActivity {
      */
     public Bitmap getBitmap()
     {
+        saveClipImage(clipImageView);
         return  bitmap;
     }
 
-    public void cancel(View view)
-    {
+    public void cancel(View view) {
         finish();
-    }
-
-    public void moveUp(){
-        bitmap = BitmapFactory.decodeFile(Constants.path);
-        imageView.setImageBitmap(bitmap);
     }
 }
